@@ -101,7 +101,6 @@ const constructor_func = @native @checked function(Text: string, Parent: Instanc
 		end;
 		return;
 	end;
-	const container = self.Container;
 	container.AnchorPoint = Vector2.new(0.5, 0.5);
 	container.Position = UDim2.new(0.5, 0, 0.5, 0);
 	container.Parent = Parent;
