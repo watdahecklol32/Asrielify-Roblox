@@ -1,5 +1,5 @@
 # Asrielify-Roblox
-An (almost) accurate remake of two Undertale font systems.
+An (almost) accurate and optimized remake of two Undertale font systems.
 
 # Showcase
 ![](https://github.com/Ducking-Entertainment/Asrielify-Roblox/blob/main/showcase.gif)
