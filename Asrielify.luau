@@ -1,7 +1,7 @@
 --!strict
 --!native
 --!optimize 2
-const constructor_func = @native @checked function(Text: string, Parent: Instance, Type: string, _Font: Enum.Font, font_size_uint: number, speed_uint: number?): {[string]: any} -- .new
+const constructor_func = @native function(Text: string, Parent: Instance, Type: string, _Font: Enum.Font, font_size_uint: number, speed_uint: number?): {[string]: any} -- .new
 	if (Type ~= "Tremble" and Type ~= "Wave") then
 		return error(`{Type} is an invalid type. Accepted types are: "Tremble" and "Wave".`, 2) :: never;
 	elseif (typeof(Parent) ~= "Instance") then
@@ -68,7 +68,7 @@ const constructor_func = @native @checked function(Text: string, Parent: Instanc
 			Letters[((x - 1) * str_len_uint + i)] = label;
 		end;
 	end;
-	self.Step = @native @checked function(self: {[string]: any}): ()
+	self.Step = @native function(self: {[string]: any}): ()
 		const len: number = self.Len;
 		const speed: number = self.Speed;
 		local index_uint: number = 1;
