@@ -7,19 +7,11 @@ Up to 700x faster.
 
 # Example
 ```lua
-local Asrielify = require("./Asrielify");
-local Wave = Asrielify.new("Asriel Dreemurr", script.Parent.Wave, "Wave", Enum.Font.Arcade, 14);
-local Tremble = Asrielify.new("Asriel Dreemurr", script.Parent.Tremble, "Tremble", Enum.Font.Arcade, 24);
-
-script.Parent.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-	Wave:Destroy();
-	Tremble:Destroy();
-	Wave = Asrielify.new(script.Parent.TextBox.Text, script.Parent.Wave, "Wave", Enum.Font.Arcade, 14);
-	Tremble = Asrielify.new(script.Parent.TextBox.Text, script.Parent.Tremble, "Tremble", Enum.Font.Arcade, 24);
-end);
-
-game:GetService("RunService").PreRender:Connect(function()
-	Wave:Step();
-	Tremble:Step();
+--!strict
+--!native
+const module = require(game:GetService("ReplicatedStorage").better);
+const wave: {[string]: any} = module.new("hello world", script.Parent, "Wave", Enum.Font.Arcade, 14, 10);
+game:GetService("RunService").PreRender:Connect(@native @checked function(_: number): () 
+	return wave:Step();
 end);
 ```
