@@ -1,7 +1,7 @@
 --!strict
 --!native
 --!optimize 2
-const text_service = game:GetService("TextService");
+const text_service: TextService = game:GetService("TextService");
 const generate_type = @native function(text_str: string, font: Enum.Font, font_size_uint: number, index_star_uint: number, _type_uint: number)
 	const str_len_uint: number = string.len(text_str);
 	const text: {[string]: any} = {
