@@ -1,29 +1,33 @@
 --!strict
 --!native
 --!optimize 2
-const constructor_func = @native @checked function(Text: string, Parent: Instance, Type: string, _Font: Enum.Font, font_size_uint: number): {[string]: any} -- .new
+const constructor_func = @native @checked function(Text: string, Parent: Instance, Type: string, _Font: Enum.Font, font_size_uint: number, speed_uint: number?): {[string]: any} -- .new
 	if (Type ~= "Tremble" and Type ~= "Wave") then
 		return error(`{Type} is an invalid type. Accepted types are: "Tremble" and "Wave".`, 2) :: never;
 	elseif (typeof(Parent) ~= "Instance") then
 		return error(`{Parent} is not a valid Instance. Parent must be an Instance.`, 2) :: never;
-	elseif (not tostring(Text)) then
+	--[[[elseif (not tostring(Text)) then -- ??????? i have so many questions but i will keep my mouth shut
 		return error(`Text parameter cannot be converted to a valid string.`, 2) :: never;
+	end;]]
+	elseif (speed_uint and type(speed_uint) ~= "number") then
+		return error(`Speed parameter is not a number!`, 2) :: never;
 	end;
 	const type_uint: number = (Type == "Wave" and 1 or 2);
 	const text_service: TextService = game:GetService("TextService");
 	local index_star_uint: number = 0;
 	const str_len_uint: number = string.len(Text);
+	const container: Frame = Instance.new("Frame");
+	const NormalPositionX = table.create(str_len_uint, 0);
+	const Letters = table.create((str_len_uint * 5), nil);
 	local self: {[string]: any} = {
 		Len = str_len_uint;
-		Container = Instance.new("Frame");
-		Letters = table.create((str_len_uint * 5), nil),
-		NormalPositionX = table.create(str_len_uint, 0),
+		Container = container;
 		Time = os.clock(),
+		Letters = Letters;
+		NormalPositionX = NormalPositionX;
 		type = type_uint,
-		Speed = 5
+		Speed = (speed_uint or 5);
 	};
-	const container: Frame = self.Container;
-	const NormalPositionX = self.NormalPositionX;
 	const vec_zero: Vector2 = Vector2.zero;
 	local last_size: Vector2 = vec_zero;
 	local last_pos: Vector2 = vec_zero;
@@ -61,7 +65,7 @@ const constructor_func = @native @checked function(Text: string, Parent: Instanc
 			end;
 			last_size = char_size;
 			last_pos = Vector2.new(label.Position.X.Offset, 0);
-			self.Letters[((x - 1) * str_len_uint + i)] = label;
+			Letters[((x - 1) * str_len_uint + i)] = label;
 		end;
 	end;
 	self.Step = @native @checked function(self: {[string]: any}): ()
