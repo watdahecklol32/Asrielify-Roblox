@@ -61,8 +61,8 @@ const constructor_func = @native function(Text: string, Parent: Instance, Type: 
 				UIGradient.Parent = label;
 			else
 				--warn("work please");
-				const o: number = label.TextTransparency;
-				label.TextTransparency = ((index_star_uint >= str_len_uint) and 0.65 or o);
+				--const o: number = label.TextTransparency;
+				label.TextTransparency = ((index_star_uint >= str_len_uint) and 0.65 or 0);
 			end;
 			last_size = char_size;
 			last_pos = Vector2.new(uwu, 0);
