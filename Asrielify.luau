@@ -1,6 +1,7 @@
 --!strict
 --!native
 --!optimize 2
+const text_service = game:GetService("TextService");
 const generate_type = @native function(text_str: string, font: Enum.Font, font_size_uint: number, index_star_uint: number, _type_uint: number)
 	const str_len_uint: number = string.len(text_str);
 	const text: {[string]: any} = {
@@ -19,7 +20,7 @@ const generate_type = @native function(text_str: string, font: Enum.Font, font_s
 	local last_pos: Vector2 = vec_zero;
 	const itteration_ctn: number = (_type_uint == 2 and 5 or 1);
 	for x: number = 1, (itteration_ctn) do
-		const size_vector: Vector2 = game:GetService("TextService"):GetTextSize(text_str, font_size_uint, font, vec_zero);
+		const size_vector: Vector2 = text_service:GetTextSize(text_str, font_size_uint, font, vec_zero);
 		container.Size = UDim2.new(0, size_vector.X, 0, size_vector.Y);
 		last_size = Vector2.zero;
 		last_pos = Vector2.zero; 
@@ -27,7 +28,7 @@ const generate_type = @native function(text_str: string, font: Enum.Font, font_s
 			index_star_uint += 1;
 			const uwu: number = (last_pos.X + last_size.X);
 			const char_str: string = string.sub(text_str, i, i);
-			const char_size: Vector2 = game:GetService("TextService"):GetTextSize(char_str, font_size_uint, font, vec_zero);
+			const char_size: Vector2 = text_service:GetTextSize(char_str, font_size_uint, font, vec_zero);
 			const label: TextLabel = Instance.new("TextLabel");
 			label.Text = char_str;
 			label.Name = tostring(i);
