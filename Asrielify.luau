@@ -1,63 +1,7 @@
 --!strict
 --!native
 --!optimize 2
-const text_service: TextService = game:GetService("TextService");
-const generate_type = @native function(text_str: string, font: Enum.Font, font_size_uint: number, index_star_uint: number, _type_uint: number)
-	const str_len_uint: number = string.len(text_str);
-	const text: {[string]: any} = {
-		Len = str_len_uint;
-		Container = Instance.new("Frame");
-		Letters = table.create((str_len_uint * 5), nil),
-		NormalPositionX = table.create(str_len_uint, 0),
-		Time = os.clock(),
-		type = _type_uint,
-		Speed = 5
-	};
-	const container: Frame = text.Container;
-	const NormalPositionX = text.NormalPositionX;
-	const vec_zero: Vector2 = Vector2.zero;
-	local last_size: Vector2 = vec_zero;
-	local last_pos: Vector2 = vec_zero;
-	const itteration_ctn: number = (_type_uint == 2 and 5 or 1);
-	for x: number = 1, (itteration_ctn) do
-		const size_vector: Vector2 = text_service:GetTextSize(text_str, font_size_uint, font, vec_zero);
-		container.Size = UDim2.new(0, size_vector.X, 0, size_vector.Y);
-		last_size = Vector2.zero;
-		last_pos = Vector2.zero; 
-		for i: number = 1, (str_len_uint) do
-			index_star_uint += 1;
-			const uwu: number = (last_pos.X + last_size.X);
-			const char_str: string = string.sub(text_str, i, i);
-			const char_size: Vector2 = text_service:GetTextSize(char_str, font_size_uint, font, vec_zero);
-			const label: TextLabel = Instance.new("TextLabel");
-			label.Text = char_str;
-			label.Name = tostring(i);
-			label.Parent = container;
-			label.TextSize = font_size_uint;
-			label.BackgroundTransparency = 1;
-			label.Size = UDim2.new(0, char_size.X, 1, 0);
-			label.Position = UDim2.new(0, uwu, 0, 0);
-			label.Font = font;
-			label.TextColor3 = Color3.fromRGB(255, 255, 255);
-			if (x == 1) then
-				NormalPositionX[i] = uwu;
-			end; 
-			--NormalPositionX[i] = (x == 1 and uwu or nil);
-			if (_type_uint == 1) then
-				const UIGradient: UIGradient = Instance.new("UIGradient");
-				UIGradient.Parent = label;
-			else
-				--warn("work please");
-				label.TextTransparency = ((index_star_uint >= str_len_uint) and 0.65 or label.TextTransparency);
-			end;
-			last_size = char_size;
-			last_pos = Vector2.new(label.Position.X.Offset, 0);
-			text.Letters[((x - 1) * str_len_uint + i)] = label;
-		end;
-	end;
-	return text;
-end;
-const constructor_func = @native function(Text: string, Parent: Instance, Type: string, _Font: Enum.Font, FontSize: number): {[string]: any} -- .new
+const constructor_func = @native @checked function(Text: string, Parent: Instance, Type: string, _Font: Enum.Font, font_size_uint: number): {[string]: any} -- .new
 	if (Type ~= "Tremble" and Type ~= "Wave") then
 		return error(`{Type} is an invalid type. Accepted types are: "Tremble" and "Wave".`, 2) :: never;
 	elseif (typeof(Parent) ~= "Instance") then
@@ -66,8 +10,61 @@ const constructor_func = @native function(Text: string, Parent: Instance, Type: 
 		return error(`Text parameter cannot be converted to a valid string.`, 2) :: never;
 	end;
 	const type_uint: number = (Type == "Wave" and 1 or 2);
-	local self: {[string]: any} = generate_type(Text, _Font, FontSize, 0, type_uint);
-	self.Step = @native function(self: {[string]: any}): ()
+	const text_service: TextService = game:GetService("TextService");
+	local index_star_uint: number = 0;
+	const str_len_uint: number = string.len(Text);
+	local self: {[string]: any} = {
+		Len = str_len_uint;
+		Container = Instance.new("Frame");
+		Letters = table.create((str_len_uint * 5), nil),
+		NormalPositionX = table.create(str_len_uint, 0),
+		Time = os.clock(),
+		type = type_uint,
+		Speed = 5
+	};
+	const container: Frame = self.Container;
+	const NormalPositionX = self.NormalPositionX;
+	const vec_zero: Vector2 = Vector2.zero;
+	local last_size: Vector2 = vec_zero;
+	local last_pos: Vector2 = vec_zero;
+	const itteration_ctn: number = (type_uint == 2 and 5 or 1);
+	for x: number = 1, (itteration_ctn) do
+		const size_vector: Vector2 = text_service:GetTextSize(Text, font_size_uint, _Font, vec_zero);
+		container.Size = UDim2.new(0, size_vector.X, 0, size_vector.Y);
+		last_size = Vector2.zero;
+		last_pos = Vector2.zero; 
+		for i: number = 1, (str_len_uint) do
+			index_star_uint += 1;
+			const uwu: number = (last_pos.X + last_size.X);
+			const char_str: string = string.sub(Text, i, i);
+			const char_size: Vector2 = text_service:GetTextSize(char_str, font_size_uint, _Font, vec_zero);
+			const label: TextLabel = Instance.new("TextLabel");
+			label.Text = char_str;
+			label.Name = tostring(i);
+			label.Parent = container;
+			label.TextSize = font_size_uint;
+			label.BackgroundTransparency = 1;
+			label.Size = UDim2.new(0, char_size.X, 1, 0);
+			label.Position = UDim2.new(0, uwu, 0, 0);
+			label.Font = _Font;
+			label.TextColor3 = Color3.fromRGB(255, 255, 255);
+			if (x == 1) then
+				NormalPositionX[i] = uwu;
+			end; 
+			--NormalPositionX[i] = (x == 1 and uwu or nil);
+			if (type_uint == 1) then
+				const UIGradient: UIGradient = Instance.new("UIGradient");
+				UIGradient.Parent = label;
+			else
+				--warn("work please");
+				label.TextTransparency = ((index_star_uint >= str_len_uint) and 0.65 or label.TextTransparency);
+			end;
+			last_size = char_size;
+			last_pos = Vector2.new(label.Position.X.Offset, 0);
+			self.Letters[((x - 1) * str_len_uint + i)] = label;
+		end;
+	end;
+	self.Step = @native @checked function(self: {[string]: any}): ()
 		const len: number = self.Len;
 		const speed: number = self.Speed;
 		local index_uint: number = 1;
@@ -84,7 +81,6 @@ const constructor_func = @native function(Text: string, Parent: Instance, Type: 
 			end;
 			self.Time = os.clock();
 		elseif (len ~= 0) then
-			-- index_uint = 0;
 			const first_letter: TextLabel = letters[1];
 			const max_x: number = (first_letter.AbsoluteSize.X / 4);
 			const NormalPositionX: {[number]: number} = self.NormalPositionX;
@@ -611,363 +607,351 @@ Function 9 (??):
 --[[
 new bytecode:
 Function 0 (??):
-5: FASTCALL1 43 R0 L0
-5: MOVE R6 R0
-5: GETIMPORT R5 2 [string.len]
-5: CALL R5 1 1
-6: L0: DUPTABLE R6 10
-7: SETTABLEKS R5 R6 K3 ['Len']
-8: GETIMPORT R7 13 [Instance.new]
-8: LOADK R8 K14 ['Frame']
-8: CALL R7 1 1
-8: SETTABLEKS R7 R6 K4 ['Container']
-9: GETIMPORT R7 17 [table.create]
-9: MULK R8 R5 K18 [5]
-9: LOADNIL R9
-9: CALL R7 2 1
-9: SETTABLEKS R7 R6 K5 ['Letters']
-10: GETIMPORT R7 17 [table.create]
-10: MOVE R8 R5
-10: LOADN R9 0
-10: CALL R7 2 1
-10: SETTABLEKS R7 R6 K6 ['NormalPositionX']
-11: GETIMPORT R7 21 [os.clock]
-11: CALL R7 0 1
-11: SETTABLEKS R7 R6 K7 ['Time']
-12: SETTABLEKS R4 R6 K8 ['type']
-13: LOADN R7 5
-13: SETTABLEKS R7 R6 K9 ['Speed']
-15: GETTABLEKS R7 R6 K4 ['Container']
-16: GETTABLEKS R8 R6 K6 ['NormalPositionX']
-17: GETIMPORT R9 24 [Vector2.zero]
-18: MOVE R10 R9
-19: MOVE R11 R9
-20: LOADN R14 1
-20: JUMPXEQKN R4 K25 L1 NOT [2]
-20: LOADN R12 5
-20: JUMP L2
-20: L1: LOADN R12 1
-20: L2: LOADN R13 1
-20: FORNPREP R12 L13
-21: L3: GETIMPORT R15 27 [game]
-21: LOADK R17 K28 ['TextService']
-21: NAMECALL R15 R15 K29 ['GetService']
-21: CALL R15 2 1
-21: MOVE R17 R0
-21: MOVE R18 R2
-21: MOVE R19 R1
-21: MOVE R20 R9
-21: NAMECALL R15 R15 K30 ['GetTextSize']
-21: CALL R15 5 1
-22: GETIMPORT R16 32 [UDim2.new]
-22: LOADN R17 0
-22: GETTABLEKS R18 R15 K33 ['X']
-22: LOADN R19 0
-22: GETTABLEKS R20 R15 K34 ['Y']
-22: CALL R16 4 1
-22: SETTABLEKS R16 R7 K35 ['Size']
-23: GETIMPORT R10 24 [Vector2.zero]
-24: GETIMPORT R11 24 [Vector2.zero]
-25: LOADN R18 1
-25: MOVE R16 R5
-25: LOADN R17 1
-25: FORNPREP R16 L12
-26: L4: GETTABLEKS R20 R11 K33 ['X']
-26: GETTABLEKS R21 R10 K33 ['X']
-26: ADD R19 R20 R21
-27: FASTCALL3 45 R0 R18 R18 L5
-27: MOVE R21 R0
-27: MOVE R22 R18
-27: MOVE R23 R18
-27: GETIMPORT R20 37 [string.sub]
-27: CALL R20 3 1
-28: L5: GETIMPORT R21 27 [game]
-28: LOADK R23 K28 ['TextService']
-28: NAMECALL R21 R21 K29 ['GetService']
-28: CALL R21 2 1
-28: MOVE R23 R20
-28: MOVE R24 R2
-28: MOVE R25 R1
-28: MOVE R26 R9
-28: NAMECALL R21 R21 K30 ['GetTextSize']
-28: CALL R21 5 1
-29: GETIMPORT R22 13 [Instance.new]
-29: LOADK R23 K38 ['TextLabel']
-29: CALL R22 1 1
-30: SETTABLEKS R20 R22 K39 ['Text']
-31: FASTCALL1 63 R18 L6
-31: MOVE R24 R18
-31: GETIMPORT R23 41 [tostring]
-31: CALL R23 1 1
-31: L6: SETTABLEKS R23 R22 K42 ['Name']
-32: SETTABLEKS R7 R22 K43 ['Parent']
-33: SETTABLEKS R2 R22 K44 ['TextSize']
-34: LOADN R23 1
-34: SETTABLEKS R23 R22 K45 ['BackgroundTransparency']
-35: GETIMPORT R23 32 [UDim2.new]
-35: LOADN R24 0
-35: GETTABLEKS R25 R21 K33 ['X']
-35: LOADN R26 1
-35: LOADN R27 0
-35: CALL R23 4 1
-35: SETTABLEKS R23 R22 K35 ['Size']
-36: GETIMPORT R23 32 [UDim2.new]
-36: LOADN R24 0
-36: MOVE R25 R19
-36: LOADN R26 0
-36: LOADN R27 0
-36: CALL R23 4 1
-36: SETTABLEKS R23 R22 K46 ['Position']
-37: SETTABLEKS R1 R22 K47 ['Font']
-38: GETIMPORT R23 50 [Color3.fromRGB]
-38: LOADN R24 255
-38: LOADN R25 255
-38: LOADN R26 255
-38: CALL R23 3 1
-38: SETTABLEKS R23 R22 K51 ['TextColor3']
-39: JUMPXEQKN R14 K52 L7 NOT [1]
-40: SETTABLE R19 R8 R18
-42: L7: JUMPXEQKN R4 K52 L8 NOT [1]
-43: GETIMPORT R23 13 [Instance.new]
-43: LOADK R24 K53 ['UIGradient']
-43: CALL R23 1 1
-44: SETTABLEKS R22 R23 K43 ['Parent']
-44: JUMP L11
-46: L8: JUMPIFNOTLE R5 R3 L9
-46: LOADK R23 K54 [0.65000000000000002]
-46: JUMP L10
-46: L9: GETTABLEKS R23 R22 K55 ['TextTransparency']
-46: L10: SETTABLEKS R23 R22 K55 ['TextTransparency']
-48: L11: MOVE R10 R21
-49: GETIMPORT R23 56 [Vector2.new]
-49: GETTABLEKS R24 R22 K46 ['Position']
-49: GETTABLEKS R24 R24 K33 ['X']
-49: GETTABLEKS R24 R24 K57 ['Offset']
-49: LOADN R25 0
-49: CALL R23 2 1
-49: MOVE R11 R23
-50: GETTABLEKS R23 R6 K5 ['Letters']
-50: SUBK R26 R14 K52 [1]
-50: MUL R25 R26 R5
-50: ADD R24 R25 R18
-50: SETTABLE R22 R23 R24
-25: FORNLOOP R16 L4
-20: L12: FORNLOOP R12 L3
-53: L13: RETURN R6 1
+68: GETTABLEKS R1 R0 K0 ['Len']
+69: GETTABLEKS R2 R0 K1 ['Speed']
+71: GETTABLEKS R3 R0 K2 ['Letters']
+72: GETTABLEKS R4 R0 K3 ['type']
+72: JUMPXEQKN R4 K4 L7 NOT [1]
+73: LOADN R6 1
+73: MOVE R4 R1
+73: LOADN R5 1
+73: FORNPREP R4 L6
+74: L0: GETTABLEKS R7 R0 K5 ['Time']
+75: GETTABLEKS R9 R0 K2 ['Letters']
+75: GETTABLE R8 R9 R6
+76: GETTABLEKS R10 R0 K6 ['NormalPositionX']
+76: GETTABLE R9 R10 R6
+77: MULK R11 R6 K7 [10]
+77: MULK R12 R7 K8 [200]
+77: ADD R10 R11 R12
+78: GETIMPORT R11 11 [Color3.fromRGB]
+78: MULK R19 R10 K17 [0.024]
+78: ADDK R18 R19 K16 [0]
+78: FASTCALL1 24 R18 L1
+78: GETIMPORT R17 20 [math.sin]
+78: CALL R17 1 1
+78: L1: MULK R16 R17 K15 [0.5]
+78: ADDK R15 R16 K15 [0.5]
+78: MULK R14 R15 K14 [0.59999999999999998]
+78: ADDK R13 R14 K13 [0.20000000000000001]
+78: MULK R12 R13 K12 [255]
+78: MULK R20 R10 K17 [0.024]
+78: ADDK R19 R20 K21 [2]
+78: FASTCALL1 24 R19 L2
+78: GETIMPORT R18 20 [math.sin]
+78: CALL R18 1 1
+78: L2: MULK R17 R18 K15 [0.5]
+78: ADDK R16 R17 K15 [0.5]
+78: MULK R15 R16 K14 [0.59999999999999998]
+78: ADDK R14 R15 K13 [0.20000000000000001]
+78: MULK R13 R14 K12 [255]
+78: MULK R21 R10 K17 [0.024]
+78: ADDK R20 R21 K22 [4]
+78: FASTCALL1 24 R20 L3
+78: GETIMPORT R19 20 [math.sin]
+78: CALL R19 1 1
+78: L3: MULK R18 R19 K15 [0.5]
+78: ADDK R17 R18 K15 [0.5]
+78: MULK R16 R17 K14 [0.59999999999999998]
+78: ADDK R15 R16 K13 [0.20000000000000001]
+78: MULK R14 R15 K12 [255]
+78: CALL R11 3 1
+79: GETIMPORT R12 25 [UDim2.new]
+79: LOADN R13 0
+79: ADDK R15 R9 K7 [10]
+79: MULK R19 R6 K27 [0.10000000000000001]
+79: MUL R20 R7 R2
+79: ADD R18 R19 R20
+79: FASTCALL1 24 R18 L4
+79: GETIMPORT R17 20 [math.sin]
+79: CALL R17 1 1
+79: L4: MULK R16 R17 K26 [5]
+79: ADD R14 R15 R16
+79: LOADN R15 0
+79: MULK R19 R6 K27 [0.10000000000000001]
+79: MUL R20 R7 R2
+79: ADD R18 R19 R20
+79: FASTCALL1 9 R18 L5
+79: GETIMPORT R17 29 [math.cos]
+79: CALL R17 1 1
+79: L5: MULK R16 R17 K26 [5]
+79: CALL R12 4 1
+79: SETTABLEKS R12 R8 K30 ['Position']
+80: GETTABLEKS R12 R8 K31 ['UIGradient']
+80: GETIMPORT R13 33 [ColorSequence.new]
+80: MOVE R14 R11
+80: MOVE R15 R11
+80: CALL R13 2 1
+80: SETTABLEKS R13 R12 K34 ['Color']
+73: FORNLOOP R4 L0
+82: L6: GETIMPORT R4 37 [os.clock]
+82: CALL R4 0 1
+82: SETTABLEKS R4 R0 K5 ['Time']
+82: RETURN R0 0
+83: L7: JUMPXEQKN R1 K16 L12 [0]
+84: GETTABLEN R4 R3 1
+85: GETTABLEKS R6 R4 K38 ['AbsoluteSize']
+85: GETTABLEKS R6 R6 K39 ['X']
+85: DIVK R5 R6 K22 [4]
+86: GETTABLEKS R6 R0 K6 ['NormalPositionX']
+87: GETTABLEKS R8 R4 K38 ['AbsoluteSize']
+87: GETTABLEKS R8 R8 K41 ['Y']
+87: DIVK R7 R8 K40 [8]
+88: GETIMPORT R8 43 [math.random]
+88: SUBRK R9 K44 [-2] R5
+88: ADDK R10 R5 K21 [2]
+88: CALL R8 2 1
+89: GETIMPORT R9 43 [math.random]
+89: SUBRK R10 K44 [-2] R7
+89: ADDK R11 R7 K21 [2]
+89: CALL R9 2 1
+90: LOADN R12 1
+90: MULK R10 R1 K26 [5]
+90: LOADN R11 1
+90: FORNPREP R10 L12
+91: L8: SUBK R15 R12 K4 [1]
+91: MOD R14 R15 R1
+91: ADDK R13 R14 K4 [1]
+92: SUBK R16 R12 K4 [1]
+92: DIV R15 R16 R1
+92: FASTCALL1 12 R15 L9
+92: GETIMPORT R14 46 [math.floor]
+92: CALL R14 1 1
+93: L9: GETTABLE R15 R3 R12
+94: GETTABLE R16 R6 R13
+95: JUMPXEQKN R14 K4 L10 NOT [1]
+95: GETIMPORT R17 25 [UDim2.new]
+95: LOADN R18 0
+95: DIVK R20 R8 K40 [8]
+95: ADD R19 R16 R20
+95: LOADN R20 0
+95: DIVK R21 R9 K40 [8]
+95: CALL R17 4 1
+95: JUMPIF R17 L11
+95: L10: GETIMPORT R17 25 [UDim2.new]
+95: LOADN R18 0
+95: ADD R19 R16 R8
+95: LOADN R20 0
+95: MOVE R21 R9
+95: CALL R17 4 1
+95: L11: SETTABLEKS R17 R15 K30 ['Position']
+90: FORNLOOP R10 L8
+98: L12: RETURN R0 0
 Function 1 (??):
-66: GETTABLEKS R1 R0 K0 ['Len']
-67: GETTABLEKS R2 R0 K1 ['Speed']
-69: GETTABLEKS R3 R0 K2 ['Letters']
-70: GETTABLEKS R4 R0 K3 ['type']
-70: JUMPXEQKN R4 K4 L7 NOT [1]
-71: LOADN R6 1
-71: MOVE R4 R1
-71: LOADN R5 1
-71: FORNPREP R4 L6
-72: L0: GETTABLEKS R7 R0 K5 ['Time']
-73: GETTABLEKS R9 R0 K2 ['Letters']
-73: GETTABLE R8 R9 R6
-74: GETTABLEKS R10 R0 K6 ['NormalPositionX']
-74: GETTABLE R9 R10 R6
-75: MULK R11 R6 K7 [10]
-75: MULK R12 R7 K8 [200]
-75: ADD R10 R11 R12
-76: GETIMPORT R11 11 [Color3.fromRGB]
-76: MULK R19 R10 K17 [0.024]
-76: ADDK R18 R19 K16 [0]
-76: FASTCALL1 24 R18 L1
-76: GETIMPORT R17 20 [math.sin]
-76: CALL R17 1 1
-76: L1: MULK R16 R17 K15 [0.5]
-76: ADDK R15 R16 K15 [0.5]
-76: MULK R14 R15 K14 [0.59999999999999998]
-76: ADDK R13 R14 K13 [0.20000000000000001]
-76: MULK R12 R13 K12 [255]
-76: MULK R20 R10 K17 [0.024]
-76: ADDK R19 R20 K21 [2]
-76: FASTCALL1 24 R19 L2
-76: GETIMPORT R18 20 [math.sin]
-76: CALL R18 1 1
-76: L2: MULK R17 R18 K15 [0.5]
-76: ADDK R16 R17 K15 [0.5]
-76: MULK R15 R16 K14 [0.59999999999999998]
-76: ADDK R14 R15 K13 [0.20000000000000001]
-76: MULK R13 R14 K12 [255]
-76: MULK R21 R10 K17 [0.024]
-76: ADDK R20 R21 K22 [4]
-76: FASTCALL1 24 R20 L3
-76: GETIMPORT R19 20 [math.sin]
-76: CALL R19 1 1
-76: L3: MULK R18 R19 K15 [0.5]
-76: ADDK R17 R18 K15 [0.5]
-76: MULK R16 R17 K14 [0.59999999999999998]
-76: ADDK R15 R16 K13 [0.20000000000000001]
-76: MULK R14 R15 K12 [255]
-76: CALL R11 3 1
-77: GETIMPORT R12 25 [UDim2.new]
-77: LOADN R13 0
-77: ADDK R15 R9 K7 [10]
-77: MULK R19 R6 K27 [0.10000000000000001]
-77: MUL R20 R7 R2
-77: ADD R18 R19 R20
-77: FASTCALL1 24 R18 L4
-77: GETIMPORT R17 20 [math.sin]
-77: CALL R17 1 1
-77: L4: MULK R16 R17 K26 [5]
-77: ADD R14 R15 R16
-77: LOADN R15 0
-77: MULK R19 R6 K27 [0.10000000000000001]
-77: MUL R20 R7 R2
-77: ADD R18 R19 R20
-77: FASTCALL1 9 R18 L5
-77: GETIMPORT R17 29 [math.cos]
-77: CALL R17 1 1
-77: L5: MULK R16 R17 K26 [5]
-77: CALL R12 4 1
-77: SETTABLEKS R12 R8 K30 ['Position']
-78: GETTABLEKS R12 R8 K31 ['UIGradient']
-78: GETIMPORT R13 33 [ColorSequence.new]
-78: MOVE R14 R11
-78: MOVE R15 R11
-78: CALL R13 2 1
-78: SETTABLEKS R13 R12 K34 ['Color']
-71: FORNLOOP R4 L0
-80: L6: GETIMPORT R4 37 [os.clock]
-80: CALL R4 0 1
-80: SETTABLEKS R4 R0 K5 ['Time']
-80: RETURN R0 0
-81: L7: JUMPXEQKN R1 K16 L12 [0]
-83: GETTABLEN R4 R3 1
-84: GETTABLEKS R6 R4 K38 ['AbsoluteSize']
-84: GETTABLEKS R6 R6 K39 ['X']
-84: DIVK R5 R6 K22 [4]
-85: GETTABLEKS R6 R0 K6 ['NormalPositionX']
-86: GETTABLEKS R8 R4 K38 ['AbsoluteSize']
-86: GETTABLEKS R8 R8 K41 ['Y']
-86: DIVK R7 R8 K40 [8]
-87: GETIMPORT R8 43 [math.random]
-87: SUBRK R9 K44 [-2] R5
-87: ADDK R10 R5 K21 [2]
-87: CALL R8 2 1
-88: GETIMPORT R9 43 [math.random]
-88: SUBRK R10 K44 [-2] R7
-88: ADDK R11 R7 K21 [2]
-88: CALL R9 2 1
-89: LOADN R12 1
-89: MULK R10 R1 K26 [5]
-89: LOADN R11 1
-89: FORNPREP R10 L12
-90: L8: SUBK R15 R12 K4 [1]
-90: MOD R14 R15 R1
-90: ADDK R13 R14 K4 [1]
-91: SUBK R16 R12 K4 [1]
-91: DIV R15 R16 R1
-91: FASTCALL1 12 R15 L9
-91: GETIMPORT R14 46 [math.floor]
-91: CALL R14 1 1
-92: L9: GETTABLE R15 R3 R12
-93: GETTABLE R16 R6 R13
-94: JUMPXEQKN R14 K4 L10 NOT [1]
-94: GETIMPORT R17 25 [UDim2.new]
-94: LOADN R18 0
-94: DIVK R20 R8 K40 [8]
-94: ADD R19 R16 R20
-94: LOADN R20 0
-94: DIVK R21 R9 K40 [8]
-94: CALL R17 4 1
-94: JUMPIF R17 L11
-94: L10: GETIMPORT R17 25 [UDim2.new]
-94: LOADN R18 0
-94: ADD R19 R16 R8
-94: LOADN R20 0
-94: MOVE R21 R9
-94: CALL R17 4 1
-94: L11: SETTABLEKS R17 R15 K30 ['Position']
-89: FORNLOOP R10 L8
-97: L12: RETURN R0 0
+5: JUMPXEQKS R2 K0 L0 ['Tremble']
+5: JUMPXEQKS R2 K1 L0 ['Wave']
+6: GETIMPORT R5 3 [error]
+6: LOADK R7 K4 ['%* is an invalid type. Accepted '...]
+6: MOVE R9 R2
+6: NAMECALL R7 R7 K5 ['format']
+6: CALL R7 2 1
+6: MOVE R6 R7
+6: LOADN R7 2
+6: CALL R5 2 1
+6: RETURN R5 1
+7: L0: FASTCALL1 44 R1 L1
+7: MOVE R6 R1
+7: GETIMPORT R5 7 [typeof]
+7: CALL R5 1 1
+7: L1: JUMPXEQKS R5 K8 L2 ['Instance']
+8: GETIMPORT R5 3 [error]
+8: LOADK R7 K9 ['%* is not a valid Instance. Pare'...]
+8: MOVE R9 R1
+8: NAMECALL R7 R7 K5 ['format']
+8: CALL R7 2 1
+8: MOVE R6 R7
+8: LOADN R7 2
+8: CALL R5 2 1
+8: RETURN R5 1
+9: L2: FASTCALL1 63 R0 L3
+9: MOVE R6 R0
+9: GETIMPORT R5 11 [tostring]
+9: CALL R5 1 1
+9: L3: JUMPIF R5 L4
+10: GETIMPORT R5 3 [error]
+10: LOADK R6 K12 ['Text parameter cannot be convert'...]
+10: LOADN R7 2
+10: CALL R5 2 1
+10: RETURN R5 1
+12: L4: JUMPXEQKS R2 K1 L5 NOT ['Wave']
+12: LOADN R5 1
+12: JUMP L6
+12: L5: LOADN R5 2
+13: L6: GETIMPORT R6 14 [game]
+13: LOADK R8 K15 ['TextService']
+13: NAMECALL R6 R6 K16 ['GetService']
+13: CALL R6 2 1
+14: LOADN R7 0
+15: FASTCALL1 43 R0 L7
+15: MOVE R9 R0
+15: GETIMPORT R8 19 [string.len]
+15: CALL R8 1 1
+16: L7: DUPTABLE R9 27
+17: SETTABLEKS R8 R9 K20 ['Len']
+18: GETIMPORT R10 29 [Instance.new]
+18: LOADK R11 K30 ['Frame']
+18: CALL R10 1 1
+18: SETTABLEKS R10 R9 K21 ['Container']
+19: GETIMPORT R10 33 [table.create]
+19: MULK R11 R8 K34 [5]
+19: LOADNIL R12
+19: CALL R10 2 1
+19: SETTABLEKS R10 R9 K22 ['Letters']
+20: GETIMPORT R10 33 [table.create]
+20: MOVE R11 R8
+20: LOADN R12 0
+20: CALL R10 2 1
+20: SETTABLEKS R10 R9 K23 ['NormalPositionX']
+21: GETIMPORT R10 37 [os.clock]
+21: CALL R10 0 1
+21: SETTABLEKS R10 R9 K24 ['Time']
+22: SETTABLEKS R5 R9 K25 ['type']
+23: LOADN R10 5
+23: SETTABLEKS R10 R9 K26 ['Speed']
+25: GETTABLEKS R10 R9 K21 ['Container']
+26: GETTABLEKS R11 R9 K23 ['NormalPositionX']
+27: GETIMPORT R12 40 [Vector2.zero]
+28: MOVE R13 R12
+29: MOVE R14 R12
+30: JUMPXEQKN R5 K41 L8 NOT [2]
+30: LOADN R15 5
+30: JUMP L9
+30: L8: LOADN R15 1
+31: L9: LOADN R18 1
+31: MOVE R16 R15
+31: LOADN R17 1
+31: FORNPREP R16 L20
+32: L10: MOVE R21 R0
+32: MOVE R22 R4
+32: MOVE R23 R3
+32: MOVE R24 R12
+32: NAMECALL R19 R6 K42 ['GetTextSize']
+32: CALL R19 5 1
+33: GETIMPORT R20 44 [UDim2.new]
+33: LOADN R21 0
+33: GETTABLEKS R22 R19 K45 ['X']
+33: LOADN R23 0
+33: GETTABLEKS R24 R19 K46 ['Y']
+33: CALL R20 4 1
+33: SETTABLEKS R20 R10 K47 ['Size']
+34: GETIMPORT R13 40 [Vector2.zero]
+35: GETIMPORT R14 40 [Vector2.zero]
+36: LOADN R22 1
+36: MOVE R20 R8
+36: LOADN R21 1
+36: FORNPREP R20 L19
+37: L11: ADDK R7 R7 K48 [1]
+38: GETTABLEKS R24 R14 K45 ['X']
+38: GETTABLEKS R25 R13 K45 ['X']
+38: ADD R23 R24 R25
+39: FASTCALL3 45 R0 R22 R22 L12
+39: MOVE R25 R0
+39: MOVE R26 R22
+39: MOVE R27 R22
+39: GETIMPORT R24 50 [string.sub]
+39: CALL R24 3 1
+40: L12: MOVE R27 R24
+40: MOVE R28 R4
+40: MOVE R29 R3
+40: MOVE R30 R12
+40: NAMECALL R25 R6 K42 ['GetTextSize']
+40: CALL R25 5 1
+41: GETIMPORT R26 29 [Instance.new]
+41: LOADK R27 K51 ['TextLabel']
+41: CALL R26 1 1
+42: SETTABLEKS R24 R26 K52 ['Text']
+43: FASTCALL1 63 R22 L13
+43: MOVE R28 R22
+43: GETIMPORT R27 11 [tostring]
+43: CALL R27 1 1
+43: L13: SETTABLEKS R27 R26 K53 ['Name']
+44: SETTABLEKS R10 R26 K54 ['Parent']
+45: SETTABLEKS R4 R26 K55 ['TextSize']
+46: LOADN R27 1
+46: SETTABLEKS R27 R26 K56 ['BackgroundTransparency']
+47: GETIMPORT R27 44 [UDim2.new]
+47: LOADN R28 0
+47: GETTABLEKS R29 R25 K45 ['X']
+47: LOADN R30 1
+47: LOADN R31 0
+47: CALL R27 4 1
+47: SETTABLEKS R27 R26 K47 ['Size']
+48: GETIMPORT R27 44 [UDim2.new]
+48: LOADN R28 0
+48: MOVE R29 R23
+48: LOADN R30 0
+48: LOADN R31 0
+48: CALL R27 4 1
+48: SETTABLEKS R27 R26 K57 ['Position']
+49: SETTABLEKS R3 R26 K58 ['Font']
+50: GETIMPORT R27 61 [Color3.fromRGB]
+50: LOADN R28 255
+50: LOADN R29 255
+50: LOADN R30 255
+50: CALL R27 3 1
+50: SETTABLEKS R27 R26 K62 ['TextColor3']
+51: JUMPXEQKN R18 K48 L14 NOT [1]
+52: SETTABLE R23 R11 R22
+55: L14: JUMPXEQKN R5 K48 L15 NOT [1]
+56: GETIMPORT R27 29 [Instance.new]
+56: LOADK R28 K63 ['UIGradient']
+56: CALL R27 1 1
+57: SETTABLEKS R26 R27 K54 ['Parent']
+57: JUMP L18
+60: L15: JUMPIFNOTLE R8 R7 L16
+60: LOADK R27 K64 [0.65000000000000002]
+60: JUMP L17
+60: L16: GETTABLEKS R27 R26 K65 ['TextTransparency']
+60: L17: SETTABLEKS R27 R26 K65 ['TextTransparency']
+62: L18: MOVE R13 R25
+63: GETIMPORT R27 66 [Vector2.new]
+63: GETTABLEKS R28 R26 K57 ['Position']
+63: GETTABLEKS R28 R28 K45 ['X']
+63: GETTABLEKS R28 R28 K67 ['Offset']
+63: LOADN R29 0
+63: CALL R27 2 1
+63: MOVE R14 R27
+64: GETTABLEKS R27 R9 K22 ['Letters']
+64: SUBK R30 R18 K48 [1]
+64: MUL R29 R30 R8
+64: ADD R28 R29 R22
+64: SETTABLE R26 R27 R28
+36: FORNLOOP R20 L11
+31: L19: FORNLOOP R16 L10
+67: L20: DUPCLOSURE R16 K68 []
+67: SETTABLEKS R16 R9 K69 ['Step']
+100: GETTABLEKS R16 R9 K21 ['Container']
+101: GETIMPORT R17 66 [Vector2.new]
+101: LOADK R18 K70 [0.5]
+101: LOADK R19 K70 [0.5]
+101: CALL R17 2 1
+101: SETTABLEKS R17 R16 K71 ['AnchorPoint']
+102: GETIMPORT R17 44 [UDim2.new]
+102: LOADK R18 K70 [0.5]
+102: LOADN R19 0
+102: LOADK R20 K70 [0.5]
+102: LOADN R21 0
+102: CALL R17 4 1
+102: SETTABLEKS R17 R16 K57 ['Position']
+103: SETTABLEKS R1 R16 K54 ['Parent']
+104: LOADK R18 K72 ['%*_Container']
+104: MOVE R20 R0
+104: NAMECALL R18 R18 K5 ['format']
+104: CALL R18 2 1
+104: MOVE R17 R18
+104: SETTABLEKS R17 R16 K53 ['Name']
+105: LOADN R17 1
+105: SETTABLEKS R17 R16 K56 ['BackgroundTransparency']
+106: GETIMPORT R17 61 [Color3.fromRGB]
+106: LOADN R18 255
+106: LOADN R19 255
+106: LOADN R20 255
+106: CALL R17 3 1
+106: SETTABLEKS R17 R16 K73 ['BackgroundColor3']
+107: RETURN R9 1
 Function 2 (??):
-56: JUMPXEQKS R2 K0 L0 ['Tremble']
-56: JUMPXEQKS R2 K1 L0 ['Wave']
-57: GETIMPORT R5 3 [error]
-57: LOADK R7 K4 ['%* is an invalid type. Accepted '...]
-57: MOVE R9 R2
-57: NAMECALL R7 R7 K5 ['format']
-57: CALL R7 2 1
-57: MOVE R6 R7
-57: LOADN R7 2
-57: CALL R5 2 1
-57: RETURN R5 1
-58: L0: FASTCALL1 44 R1 L1
-58: MOVE R6 R1
-58: GETIMPORT R5 7 [typeof]
-58: CALL R5 1 1
-58: L1: JUMPXEQKS R5 K8 L2 ['Instance']
-59: GETIMPORT R5 3 [error]
-59: LOADK R7 K9 ['%* is not a valid Instance. Pare'...]
-59: MOVE R9 R1
-59: NAMECALL R7 R7 K5 ['format']
-59: CALL R7 2 1
-59: MOVE R6 R7
-59: LOADN R7 2
-59: CALL R5 2 1
-59: RETURN R5 1
-60: L2: FASTCALL1 63 R0 L3
-60: MOVE R6 R0
-60: GETIMPORT R5 11 [tostring]
-60: CALL R5 1 1
-60: L3: JUMPIF R5 L4
-61: GETIMPORT R5 3 [error]
-61: LOADK R6 K12 ['Text parameter cannot be convert'...]
-61: LOADN R7 2
-61: CALL R5 2 1
-61: RETURN R5 1
-63: L4: JUMPXEQKS R2 K1 L5 NOT ['Wave']
-63: LOADN R5 1
-63: JUMP L6
-63: L5: LOADN R5 2
-64: L6: GETUPVAL R6 0
-64: MOVE R7 R0
-64: MOVE R8 R3
-64: MOVE R9 R4
-64: LOADN R10 1
-64: MOVE R11 R5
-64: CALL R6 5 1
-65: DUPCLOSURE R7 K13 []
-65: SETTABLEKS R7 R6 K14 ['Step']
-99: GETTABLEKS R7 R6 K15 ['Container']
-100: GETIMPORT R8 18 [Vector2.new]
-100: LOADK R9 K19 [0.5]
-100: LOADK R10 K19 [0.5]
-100: CALL R8 2 1
-100: SETTABLEKS R8 R7 K20 ['AnchorPoint']
-101: GETIMPORT R8 22 [UDim2.new]
-101: LOADK R9 K19 [0.5]
-101: LOADN R10 0
-101: LOADK R11 K19 [0.5]
-101: LOADN R12 0
-101: CALL R8 4 1
-101: SETTABLEKS R8 R7 K23 ['Position']
-102: SETTABLEKS R1 R7 K24 ['Parent']
-103: LOADK R9 K25 ['%*_Container']
-103: MOVE R11 R0
-103: NAMECALL R9 R9 K5 ['format']
-103: CALL R9 2 1
-103: MOVE R8 R9
-103: SETTABLEKS R8 R7 K26 ['Name']
-104: LOADN R8 1
-104: SETTABLEKS R8 R7 K27 ['BackgroundTransparency']
-105: GETIMPORT R8 30 [Color3.fromRGB]
-105: LOADN R9 255
-105: LOADN R10 255
-105: LOADN R11 255
-105: CALL R8 3 1
-105: SETTABLEKS R8 R7 K31 ['BackgroundColor3']
-106: RETURN R6 1
-Function 3 (??):
 4: DUPCLOSURE R0 K0 []
-55: DUPCLOSURE R1 K1 []
-55: CAPTURE VAL R0
-108: DUPTABLE R2 3
-109: SETTABLEKS R1 R2 K2 ['new']
-109: RETURN R2 1
+109: DUPTABLE R1 2
+110: SETTABLEKS R0 R1 K1 ['new']
+110: RETURN R1 1
 ]]
